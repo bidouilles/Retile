@@ -49,6 +49,7 @@
 #include <string.h>
 #include <stdint.h>
 #include <unistd.h>
+#include <pthread.h>
 
 #include <errno.h>  // for mkdir
 #include <libgen.h> // for mkdir
@@ -63,9 +64,6 @@
 
 #include "tinydir.h"        // https://github.com/cxong/tinydir/blob/master/tinydir.h
 #include "sqlite3.h"
-
-#include <Accelerate/Accelerate.h>
-
 
 
 
@@ -699,7 +697,7 @@ static inline void _FixDestTileBufferIfNeeded(uint32_t**   dest_tile,
 
 
 
-
+#ifdef __ACCELERATE__
 // ==========================
 // _IncDecrementWithSemaphore
 // ==========================
@@ -730,11 +728,7 @@ static inline int _IncDecrementWithSemaphore(int*                 x,
     
     return retVal;
 }//_DecrementWithSemaphore
-
-
-
-
-
+#endif
 
 
 
@@ -921,7 +915,7 @@ static inline void _DownsampleCompressAndWrite_RetileBuffers_RGBA8888(const char
     local_rgba = NULL;
 }//_DownsampleCompressAndWriteTile_RetileBuffers_RGBA8888
 
-
+#ifdef __ACCELERATE__
 // ==================================================================
 // _DownsampleCompressAndWrite_RetileBuffers_DispatchWrapper_RGBA8888
 // ==================================================================
@@ -942,7 +936,7 @@ static inline void _DownsampleCompressAndWrite_RetileBuffers_DispatchWrapper_RGB
                                                                                       const bool           alsoReprocessSrc,
                                                                                       const int            interpolationTypeId)
 {
-#ifdef __ACCELERATE__
+
     // copy filenames and refs synchronously, as they are stack alloc / reused
     
     const size_t   local_rt_buf_n = rt_buf_n;
@@ -968,9 +962,9 @@ static inline void _DownsampleCompressAndWrite_RetileBuffers_DispatchWrapper_RGB
         
         _IncDecrementWithSemaphore(queue_n, sema_idx, false, true);
     });
-#endif
-}//_DownsampleCompressAndWriteTile_RetileBuffers_DispatchWrapper_RGBA8888
 
+}//_DownsampleCompressAndWriteTile_RetileBuffers_DispatchWrapper_RGBA8888
+#endif
 
 
 static inline void _GetFilepathAndCreateIntermediatePathsIfNeeded(char*          dest_filepath,
@@ -1409,7 +1403,7 @@ static inline void _EnlargeCompressAndWrite_RetileBuffers_RGBA8888(const char*  
     local_rgba = NULL;
 }//_EnlargeCompressAndWriteTile_RetileBuffers_RGBA8888
 
-
+#ifdef __ACCELERATE__
 // ===============================================================
 // _EnlargeCompressAndWrite_RetileBuffers_DispatchWrapper_RGBA8888
 // ===============================================================
@@ -1432,7 +1426,6 @@ static inline void _EnlargeCompressAndWrite_RetileBuffers_DispatchWrapper_RGBA88
                                                                                    const int            urlTemplateId,
                                                                                    const int            interpolationTypeId)
 {
-#ifdef __ACCELERATE__
     // copy filenames and refs synchronously, as they are stack alloc / reused
     
     const size_t   local_rt_buf_n = rt_buf_n;
@@ -1458,9 +1451,8 @@ static inline void _EnlargeCompressAndWrite_RetileBuffers_DispatchWrapper_RGBA88
         
         _IncDecrementWithSemaphore(queue_n, sema_idx, false, true);
     });
-#endif
 }//_EnlargeCompressAndWriteTile_RetileBuffers_DispatchWrapper_RGBA8888
-
+#endif
 
 // ====================
 // _QueueEnlargeFromDB:
@@ -1724,12 +1716,12 @@ static inline void _ReprocessTile(const char* filename)
     rgba = NULL;
 }//_ReprocessTile
 
+#ifdef __ACCELERATE__
 static inline void _ReprocessTile_DispatchWrapper(const char*          filename,
                                                   dispatch_semaphore_t sema_write,
                                                   dispatch_semaphore_t sema_idx,
                                                   int*                 queue_n)
 {
-#ifdef __ACCELERATE__
     char* local_filename = malloc(sizeof(char) * 1024);
     memcpy(local_filename, filename, 1024);
     
@@ -1744,9 +1736,8 @@ static inline void _ReprocessTile_DispatchWrapper(const char*          filename,
         
         _IncDecrementWithSemaphore(queue_n, sema_idx, false, true);
     });
-#endif
 }//_ReprocessTile_DispatchWrapper
-
+#endif
 
 
 

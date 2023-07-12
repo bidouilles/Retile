@@ -4,14 +4,22 @@
 #include <stdint.h>
 #include "sqlite3.h"
 #include "unistd.h"
-#include <Accelerate/Accelerate.h>
-#include "NEONvsSSE_5.h" // https://software.intel.com/en-us/blogs/2012/12/12/from-arm-neon-to-intel-mmxsse-automatic-porting-solution-tips-and-tricks
+#include <stdbool.h>
+// #include "NEONvsSSE_5.h" // https://software.intel.com/en-us/blogs/2012/12/12/from-arm-neon-to-intel-mmxsse-automatic-porting-solution-tips-and-tricks
 
 #ifndef gbImage_Geometry_h
 #define gbImage_Geometry_h
 
 #if defined (__cplusplus)
 extern "C" {
+#endif
+
+#ifndef MIN
+#define MIN(a, b) (((a) < (b)) ? (a) : (b))
+#endif
+
+#ifndef MAX
+#define MAX(a, b) (((a) > (b)) ? (a) : (b))
 #endif
     
 typedef int GB_Image_InterpolationType; enum

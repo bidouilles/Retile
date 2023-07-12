@@ -507,18 +507,31 @@ static inline void _CombineRows_NODATA_RGBA8888_scalar(const uint8_t* src0,
 }//_CombineRows_NODATA_RGBA8888_scalar
 
 
-// =========================================
-// gbImage_Resize_vImage_Lanczos3x3_RGBA8888
-// ==========================================
-//
-// Basic wrapper around vImageScale's Lanczos 3x3 resize.
-//
-// This produces superior results to downsampling by average, but is slightly
-// slower and introduces ringing and overshoot / undershoot artifacts.
-//
-// Lanczos 5x5 is obtainable by passing kvImageHighQualityResampling
-//             instead of kvImageNoFlags.  However, the artifacts are increased.
-//
+// // =========================================
+// // gbImage_Resize_vImage_Lanczos3x3_RGBA8888
+// // ==========================================
+// //
+// // Basic wrapper around vImageScale's Lanczos 3x3 resize.
+// //
+// // This produces superior results to downsampling by average, but is slightly
+// // slower and introduces ringing and overshoot / undershoot artifacts.
+// //
+// // Lanczos 5x5 is obtainable by passing kvImageHighQualityResampling
+// //             instead of kvImageNoFlags.  However, the artifacts are increased.
+// //
+// void gbImage_Resize_vImage_Lanczos3x3_RGBA8888(const uint8_t* src,
+//                                                uint8_t*       dest,
+//                                                const size_t   src_w,
+//                                                const size_t   src_h,
+//                                                const size_t   src_rowBytes,
+//                                                const size_t   dest_w,
+//                                                const size_t   dest_h,
+//                                                const size_t   dest_rowBytes)
+// {
+//     vImage_Buffer vi_src  = { (void*)src,   src_h,  src_w,  src_rowBytes };
+//     vImage_Buffer vi_dest = { (void*)dest, dest_h, dest_w, dest_rowBytes };
+//     vImageScale_ARGB8888(&vi_src, &vi_dest, NULL, kvImageNoFlags);
+// }//gbImage_Resize_vImage_Lanczos3x3_RGBA8888
 void gbImage_Resize_vImage_Lanczos3x3_RGBA8888(const uint8_t* src,
                                                uint8_t*       dest,
                                                const size_t   src_w,
@@ -527,13 +540,21 @@ void gbImage_Resize_vImage_Lanczos3x3_RGBA8888(const uint8_t* src,
                                                const size_t   dest_w,
                                                const size_t   dest_h,
                                                const size_t   dest_rowBytes)
-{
-    vImage_Buffer vi_src  = { (void*)src,   src_h,  src_w,  src_rowBytes };
-    vImage_Buffer vi_dest = { (void*)dest, dest_h, dest_w, dest_rowBytes };
-    
-    vImageScale_ARGB8888(&vi_src, &vi_dest, NULL, kvImageNoFlags);
-}//gbImage_Resize_vImage_Lanczos3x3_RGBA8888
+{}//gbImage_Resize_vImage_Lanczos3x3_RGBA8888
 
+// void gbImage_Resize_vImage_Lanczos5x5_RGBA8888(const uint8_t* src,
+//                                                uint8_t*       dest,
+//                                                const size_t   src_w,
+//                                                const size_t   src_h,
+//                                                const size_t   src_rowBytes,
+//                                                const size_t   dest_w,
+//                                                const size_t   dest_h,
+//                                                const size_t   dest_rowBytes)
+// {
+//     vImage_Buffer vi_src  = { (void*)src,   src_h,  src_w,  src_rowBytes };
+//     vImage_Buffer vi_dest = { (void*)dest, dest_h, dest_w, dest_rowBytes };
+//     vImageScale_ARGB8888(&vi_src, &vi_dest, NULL, kvImageHighQualityResampling);
+// }//
 void gbImage_Resize_vImage_Lanczos5x5_RGBA8888(const uint8_t* src,
                                                uint8_t*       dest,
                                                const size_t   src_w,
@@ -542,12 +563,7 @@ void gbImage_Resize_vImage_Lanczos5x5_RGBA8888(const uint8_t* src,
                                                const size_t   dest_w,
                                                const size_t   dest_h,
                                                const size_t   dest_rowBytes)
-{
-    vImage_Buffer vi_src  = { (void*)src,   src_h,  src_w,  src_rowBytes };
-    vImage_Buffer vi_dest = { (void*)dest, dest_h, dest_w, dest_rowBytes };
-    
-    vImageScale_ARGB8888(&vi_src, &vi_dest, NULL, kvImageHighQualityResampling);
-}//gbImage_Resize_vImage_Lanczos5x5_RGBA8888
+{}//gbImage_Resize_vImage_Lanczos5x5_RGBA8888
 
 // =================================
 // gbImage_Resize_Bilinear_RGBA8888:
@@ -762,7 +778,7 @@ void gbImage_Resize_HalfTile_RGBA8888(const uint8_t*      src,
     int _interpolationTypeId = interpolationTypeId;
     
 #ifndef __ACCELERATE__
-    _interpolationTypeId  = _interpolationTypeId  == kGB_Image_Interp_Lanczos3x3 || kGB_Image_Interp_Lanczos5x5 ? kGB_Image_Interp_Average;
+    _interpolationTypeId = kGB_Image_Interp_Average;
 #endif
     
     if (_interpolationTypeId == kGB_Image_Interp_Average)

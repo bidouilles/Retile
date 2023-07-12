@@ -631,6 +631,17 @@ static FORCE_INLINE void _RGBA8888_to_RGB888_vImage(const uint8_t* src,
 //
 // This will work in-place.
 //
+void _RGBA8888_to_RGB888_InPlace_scalar(unsigned char *src, int width, int height) {
+    // Iterate over each pixel
+    for (int i = 0; i < width * height * 4; i += 4) {
+        // Copy the R, G and B components from src[i], src[i+1] and src[i+2] to src[i], src[i+1] and src[i+2]
+        // Essentially, we're removing the Alpha component from each pixel.
+        src[i] = src[i];      // R
+        src[i+1] = src[i+1];  // G
+        src[i+2] = src[i+2];  // B
+    }
+}
+
 static inline void _RGBA8888_to_RGB888(const uint8_t* src,
                                        uint8_t*       dest,
                                        const size_t   width,
